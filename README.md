@@ -1,5 +1,5 @@
-Google Maps Android API Sample: Current Place Details
-=====================================================
+Projek Ini Merupakan Pengembangan Dari Google Maps Sample CurrentPlaceDetailsOnMap Dengan Menggunakan Retrofit 
+==============================================================================================================
 
 This sample goes hand in hand with a tutorial for the Google Maps Android API:
 [Select Current Place and Show Details on a Map](https://developers.google.com/maps/documentation/android-api/current-place-tutorial).
