@@ -3,7 +3,6 @@ package com.example.atlas;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.icu.text.NumberFormat;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +44,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -55,7 +55,7 @@ import retrofit2.Response;
 /**
  * Aktivitas yang menampilkan peta yang menunjukkan tempat di lokasi perangkat saat ini.
  */
-@RequiresApi(api = Build.VERSION_CODES.N)
+
 public class MapsActivityCurrentPlace extends AppCompatActivity
         implements OnMapReadyCallback {
 
@@ -95,7 +95,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
     private int iMap = 0;
 
     // Untuk format lat dan lon
-    NumberFormat formatter = NumberFormat.getInstance(Locale.US);
+    NumberFormat formatter = NumberFormat.getInstance(new Locale("en"));
     private Hasil dataPlace = new Hasil();
 
     // untuk parameter searchnearby api oleh places
@@ -165,21 +165,6 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.option_get_place) {
-
-
-            int i = 0;
-            for (String namePlaces :
-                    mLikelyPlaceNames) {
-                String markerSnippet = mLikelyPlaceAddresses[i];
-                if (mLikelyPlaceAttributions[i] != null) {
-                    markerSnippet = markerSnippet + "\n" + mLikelyPlaceAttributions[i];
-                }
-                mMap.addMarker(new MarkerOptions()
-                        .title(namePlaces)
-                        .position(mLikelyPlaceLatLngs[i])
-                        .snippet(markerSnippet));
-                i++;
-            }
             showCurrentPlace();
         }
         return true;
@@ -313,6 +298,22 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                     mLikelyPlaceLatLngs[i] = new LatLng(place.getGeometry().getLocation().getLat(), place.getGeometry().getLocation().getLng());
                     i++;
                 }
+
+                if(mLocationPermissionGranted){
+                    i = 0;
+                    for (String namePlaces :
+                            mLikelyPlaceNames) {
+                        String markerSnippet = mLikelyPlaceAddresses[i];
+                        if (mLikelyPlaceAttributions[i] != null) {
+                            markerSnippet = markerSnippet + "\n" + mLikelyPlaceAttributions[i];
+                        }
+                        mMap.addMarker(new MarkerOptions()
+                                .title(namePlaces)
+                                .position(mLikelyPlaceLatLngs[i])
+                                .snippet(markerSnippet));
+                        i++;
+                    }
+                }
             }
 
             @Override
@@ -334,6 +335,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
+            getNearbySearch();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
