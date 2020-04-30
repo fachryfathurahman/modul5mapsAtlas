@@ -1,3 +1,4 @@
+
 package com.example.atlas;
 
 import android.annotation.SuppressLint;
@@ -71,8 +72,8 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
 
     //Lokasi default (malang, ijen) dan zoom default untuk digunakan ketika izin lokasi
     //tidak di izinkan
-    double lat = -7.980301;
-    double lon = 112.617647;
+    double lat ;
+    double lon ;
     private final LatLng mDefaultLocation = new LatLng(lat, lon);
     private static final int DEFAULT_ZOOM = 15;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -238,6 +239,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                                                 mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                                 lon = mLastKnownLocation.getLongitude();
                                 lat = mLastKnownLocation.getLatitude();
+                                getNearbySearch();
                             }
                         } else {
                             Log.d(TAG, "lokasi saat ini null, pake default.");
@@ -250,7 +252,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                         setelah dapat lokasi terkini, mencari lokasi restoran
                         berdasarkan lokasi saat ini
                          */
-                        getNearbySearch();
+
                     }
                 });
             }
@@ -335,7 +337,7 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
-            getNearbySearch();
+
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -372,18 +374,17 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
             return;
         }
         if (mLocationPermissionGranted) {
-            MapsActivityCurrentPlace.this.openPlacesDialog();
+            if (mLastKnownLocation==null){
+                getDeviceLocation();
+            }else {
+                MapsActivityCurrentPlace.this.openPlacesDialog();
+            }
 
         } else {
             // Pengguna belum memberikan izin maka akan
             // masuk sini.
             Log.i(TAG, "The user did not grant location permission.");
 
-            // Tambahkan penanda default, karena pengguna belum memilih tempat.
-            mMap.addMarker(new MarkerOptions()
-                    .title(getString(R.string.default_info_title))
-                    .position(mDefaultLocation)
-                    .snippet(getString(R.string.default_info_snippet)));
 
             // Meminta pengguna untuk izin.
             getLocationPermission();
@@ -433,7 +434,6 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
             if (mLocationPermissionGranted) {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
-
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
